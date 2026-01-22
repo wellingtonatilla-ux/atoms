@@ -1,0 +1,786 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Estética Automotiva - Atilla</title>
+  <style>
+
+    /* === SIMULADOR DE CUSTOMIZAÇÃO === */
+#simulador-container {
+  max-width: 900px;
+  margin: 60px auto;
+  padding: 30px;
+  background: rgba(0, 10, 20, 0.8);
+  border: 1px solid #00ffff66;
+  border-radius: 15px;
+  box-shadow: 0 0 25px #00ffff55;
+  color: #fff;
+}
+
+#simulador-container h3 {
+  text-align: center;
+  font-size: 2rem;
+  margin-bottom: 25px;
+  color: #00ffff;
+  text-shadow: 0 0 15px #00ffff;
+}
+
+.sim-group {
+  margin-bottom: 25px;
+}
+
+.sim-group label {
+  font-weight: bold;
+  color: #00ffff;
+}
+
+.sim-group select,
+.sim-group input[type=checkbox] {
+  margin-top: 8px;
+}
+
+.sim-item {
+  margin: 6px 0;
+}
+
+#resultado {
+  margin-top: 25px;
+  background: rgba(0, 255, 255, 0.1);
+  padding: 20px;
+  border-radius: 10px;
+}
+
+#gerar-os {
+  margin-top: 20px;
+  padding: 15px 25px;
+  background: #00ffff;
+  color: #000;
+  border: none;
+  border-radius: 10px;
+  font-size: 1.1rem;
+  cursor: pointer;
+  transition: 0.3s;
+}
+
+#gerar-os:hover {
+  box-shadow: 0 0 20px #00ffff;
+}
+
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      color: #fff;
+      overflow-x: hidden;
+      background: #000;
+    }
+
+    /* === FUNDO TRON === */
+    canvas#tronBackground {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      z-index: -2;
+      background: radial-gradient(circle at 50% 60%, #000010 10%, #000000 100%);
+    }
+
+    .overlay {
+      position: fixed;
+      inset: 0;
+      background: radial-gradient(circle at center, rgba(0, 255, 255, 0.1), rgba(0, 0, 20, 0.8));
+      mix-blend-mode: screen;
+      z-index: -1;
+    }
+
+    header {
+      position: relative;
+      z-index: 1;
+      background: rgba(0, 0, 0, 0.7);
+      backdrop-filter: blur(8px);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 20px 40px;
+      box-shadow: 0 0 25px rgba(0, 255, 255, 0.4);
+    }
+
+    header img {
+      height: 70px;
+      filter: drop-shadow(0 0 12px #00ffff);
+    }
+
+    header h1 {
+      color: #00ffff;
+      text-shadow: 0 0 20px #00ffff;
+      font-size: 1.8rem;
+    }
+
+    nav a {
+      color: #fff;
+      margin-left: 20px;
+      text-decoration: none;
+      font-weight: bold;
+      transition: color 0.3s, text-shadow 0.3s;
+    }
+
+    nav a:hover {
+      color: #00ffff;
+      text-shadow: 0 0 10px #00ffff;
+    }
+
+    .hero {
+      text-align: center;
+      padding: 100px 20px 60px;
+      background: rgba(0, 0, 0, 0.4);
+      backdrop-filter: blur(4px);
+      position: relative;
+      z-index: 1;
+    }
+
+    .hero h2 {
+      font-size: 3rem;
+      color: #00ffff;
+      text-shadow: 0 0 25px #00ffff;
+    }
+
+    .hero p {
+      font-size: 1.3rem;
+      color: #ccc;
+      margin-top: 20px;
+      max-width: 800px;
+      margin-left: auto;
+      margin-right: auto;
+    }
+
+    /* === SEÇÃO SERVIÇOS === */
+    .section {
+      padding: 80px 20px;
+      max-width: 1100px;
+      margin: auto;
+      position: relative;
+      z-index: 1;
+      text-align: center;
+    }
+
+    .section h3 {
+      font-size: 2.5rem;
+      margin-bottom: 40px;
+      color: #00ffff;
+      text-shadow: 0 0 20px #00ffff;
+    }
+
+    .services {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+      gap: 30px;
+    }
+
+    .service-box {
+      background: rgba(0, 10, 15, 0.7);
+      border: 1px solid rgba(0, 255, 255, 0.3);
+      border-radius: 15px;
+      padding: 25px;
+      box-shadow: 0 0 25px rgba(0, 255, 255, 0.2);
+      transition: transform 0.3s, box-shadow 0.3s;
+    }
+
+    .service-box:hover {
+      transform: translateY(-10px);
+      box-shadow: 0 0 30px rgba(0, 255, 255, 0.5);
+    }
+
+    .service-box h4 {
+      color: #00ffff;
+      margin-bottom: 15px;
+    }
+
+    .service-box p {
+      color: #ccc;
+      font-size: 1rem;
+    }
+
+    /* === GALERIA === */
+    .gallery {
+      position: relative;
+      width: 100%;
+      height: 70vh;
+      overflow: hidden;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin-top: 40px;
+    }
+
+    .gallery img {
+      position: absolute;
+      width: auto;
+      height: 100%;
+      opacity: 0;
+      object-fit: cover;
+      transition: opacity 2s ease, transform 6s ease;
+      border-radius: 10px;
+      box-shadow: 0 0 30px rgba(0, 255, 255, 0.4);
+    }
+
+    /* === CHAMADA DE AÇÃO === */
+    .cta {
+      text-align: center;
+      margin: 100px auto;
+      position: relative;
+      z-index: 1;
+      max-width: 800px;
+    }
+
+    .cta h2 {
+      color: #00ffff;
+      font-size: 2.5rem;
+      text-shadow: 0 0 20px #00ffff;
+    }
+
+    .cta p {
+      font-size: 1.3rem;
+      color: #ccc;
+      margin: 20px 0;
+    }
+
+    .cta a {
+      display: inline-block;
+      background: linear-gradient(90deg, #00ffff, #0066ff);
+      color: #000;
+      padding: 15px 40px;
+      font-weight: bold;
+      text-decoration: none;
+      border-radius: 10px;
+      box-shadow: 0 0 20px #00ffff;
+      transition: transform 0.3s, box-shadow 0.3s;
+    }
+
+    .cta a:hover {
+      transform: scale(1.05);
+      box-shadow: 0 0 40px #00ffff;
+    }
+
+    footer {
+      position: relative;
+      z-index: 1;
+      background: rgba(0, 0, 0, 0.9);
+      color: #aaa;
+      text-align: center;
+      padding: 30px 20px;
+      font-size: 0.9rem;
+    }
+  </style>
+</head>
+<body>
+  <canvas id="tronBackground"></canvas>
+  <div class="overlay"></div>
+
+  <header>
+    <img src="C:\Users\welli\OneDrive\Área de Trabalho\logo Atoms (1).png" alt="Logo Estética Automotiva">
+    <h1>Estética Automotiva Atilla</h1>
+    <nav>
+      <a href="#servicos">Serviços</a>
+      <a href="#galeria">Galeria</a>
+      <a href="#contato">Contato</a>
+    </nav>
+  </header>
+
+  <section class="hero">
+    <h2>Transformamos Seu Carro em Uma Obra de Arte</h2>
+    <p>Na <strong>Estética Automotiva Atilla</strong>, unimos tecnologia, acabamento premium e paixão por carros para entregar o máximo em qualidade e estilo.  
+    Cada detalhe é pensado para destacar o que seu carro tem de melhor.</p>
+  </section>
+
+  <section id="servicos" class="section">
+    <h3>Nossos Serviços</h3>
+    <div class="services">
+      <div class="service-box">
+        <h4>Películas & Controle Solar</h4>
+        <p>Proteja seu interior, reduza o calor e ganhe privacidade com películas antivandalismo e controle solar profissional.</p>
+      </div>
+      <div class="service-box">
+        <h4>Envelopamento Automotivo</h4>
+        <p>Mude o visual do seu carro com cores exclusivas, texturas especiais e acabamento impecável que protege a pintura original.</p>
+      </div>
+      <div class="service-box">
+        <h4>Sonorização & Multimídia</h4>
+        <p>Instalação de sistemas de som, multimídias e iluminação para uma experiência imersiva dentro do seu carro.</p>
+      </div>
+      <div class="service-box">
+        <h4>Iluminação & LED</h4>
+        <p>Customize com luzes de presença, DRLs, faróis de LED e iluminação interna que combinam tecnologia e design.</p>
+      </div>
+    </div>
+  </section>
+
+  <section id="galeria" class="gallery">
+    <img src="D:\imagens\Insulfilm\20250505_124921.jpg" alt="">
+    <img src="D:\imagens\Insulfilm\20250505_153050.jpg" alt="">
+    <img src="D:\imagens\Insulfilm\20250513_191256.jpg" alt="">
+    <img src="D:\imagens\Insulfilm\20250603_153324.jpg" alt="">
+    <img src="D:\imagens\Insulfilm\20250614_142021.jpg" alt="">
+  </section>
+
+  <section id="simulador-container">
+  <h3>Simulador de Customização Automotiva</h3>
+
+  <div class="sim-group">
+    <label>Modelo do Carro:</label>
+    <select id="carro">
+      <option value="">Selecione</option>
+      <option value="Hatch">Hatch</option>
+      <option value="Sedan">Sedan</option>
+      <option value="SUV">SUV</option>
+      <option value="Pickup">Pickup</option>
+    </select>
+  </div>
+
+  <div class="sim-group">
+    <label>Películas / Insulfilm:</label><br>
+
+    <div class="sim-item">
+      <input type="checkbox" data-nome="Insulfilm G20" data-preco="180">
+      Insulfilm G20 – R$ 180
+    </div>
+    <div class="sim-item">
+      <input type="checkbox" data-nome="Insulfilm G5" data-preco="200">
+      Insulfilm G5 – R$ 200
+    </div>
+    <div class="sim-item">
+      <input type="checkbox" data-nome="Antivandalismo 200 micras" data-preco="450">
+      Antivandalismo 200 micras – R$ 450
+    </div>
+    <div class="sim-item">
+      <input type="checkbox" data-nome="Antivandalismo 300 micras" data-preco="680">
+      Antivandalismo 300 micras – R$ 680
+    </div>
+  </div>
+
+  <div class="sim-group">
+    <label>Envelopamento Automotivo:</label><br>
+
+    <div class="sim-item">
+      <input type="checkbox" data-nome="Envelopamento Fosco (cor padrão)" data-preco="1200">
+      Envelopamento Fosco – R$ 1.200
+    </div>
+    <div class="sim-item">
+      <input type="checkbox" data-nome="Envelopamento Brilhante Premium" data-preco="1500">
+      Brilhante Premium – R$ 1.500
+    </div>
+    <div class="sim-item">
+      <input type="checkbox" data-nome="Envelopamento Cromado" data-preco="4200">
+      Cromado – R$ 4.200
+    </div>
+  </div>
+
+  <div class="sim-group">
+    <label>Iluminação & Acessórios:</label><br>
+
+    <div class="sim-item">
+      <input type="checkbox" data-nome="Farol LED (par)" data-preco="250">
+      Farol LED – R$ 250
+    </div>
+    <div class="sim-item">
+      <input type="checkbox" data-nome="DRL Branco" data-preco="200">
+      DRL Branco – R$ 200
+    </div>
+    <div class="sim-item">
+      <input type="checkbox" data-nome="Iluminação Interna RGB" data-preco="180">
+      Interno RGB – R$ 180
+    </div>
+  </div>
+
+  <button id="gerar-os">Gerar Orçamento / OS</button>
+
+  <div id="resultado"></div>
+</section>
+
+  <section class="cta">
+    <h2>🚗 Faça Seu Carro Brilhar!</h2>
+    <p>Seu carro merece o melhor. Agende agora um horário e descubra como podemos transformar cada detalhe em algo extraordinário.</p>
+    <a href="https://wa.me/5511966036346" target="_blank">Falar no WhatsApp</a>
+  </section>
+
+  <section id="contato" style="text-align:center; margin: 60px auto; position: relative; z-index: 1;">
+    <h3 style="color:#00ffff; font-size:2rem; text-shadow:0 0 10px #00ffff;">Contato</h3>
+    <p style="font-size:1.1rem; color:#ccc;">
+      📍 São Paulo / SP<br>
+      📞 (11) 96603-6346<br>
+      📧 atillawellington@gmail.com<br>
+      📱 <a href="https://wa.me/5511966036346" style="color:#00ffff;">WhatsApp</a>
+    </p>
+  </section>
+
+  <section id="simulador-container" class="section">
+  <h3>Simulador de Customização Automotiva</h3>
+
+  <label>Tipo do carro:</label>
+  <select id="tipoCarro" onchange="iniciar3D(this.value + '.glb')">
+    <option value="Hatch">Hatch</option>
+    <option value="Sedan">Sedan</option>
+    <option value="SUV">SUV</option>
+    <option value="Pickup">Pickup</option>
+  </select>
+
+  <div id="view3d" style="width:100%; height:350px; margin:20px auto; border:1px solid #00ffff;"></div>
+
+  <h4>Selecione Serviços</h4>
+  <div id="lista-servicos"></div>
+
+  <button id="gerar">Gerar Orçamento / OS</button>
+
+  <div id="resultado"></div>
+</section>
+
+<div id="custom3d" style="margin-top:20px;">
+
+  <h4 style="color:#00ffff;">Envelopamento / Cor</h4>
+  <input type="color" id="corCarro" value="#00aaff" style="width:120px;height:50px;">
+
+  <h4 style="color:#00ffff;margin-top:20px;">Película (Insulfilm)</h4>
+  <select id="pelicula">
+    <option value="1">Sem Película</option>
+    <option value="0.8">G35</option>
+    <option value="0.5">G20</option>
+    <option value="0.25">G5</option>
+  </select>
+
+  <h4 style="color:#00ffff;margin-top:20px;">Iluminação</h4>
+  <label><input type="checkbox" id="drl"> DRL</label><br>
+  <label><input type="checkbox" id="farol"> Farol LED</label><br>
+  <label><input type="checkbox" id="interno"> Iluminação Interna</label>
+
+</div>
+
+
+  <footer>
+    &copy; 2025 Estética Automotiva Atilla. Todos os direitos reservados.
+  </footer>
+
+  <script>
+let pinturaMaterial = null;
+let vidroMaterial = null;
+let farolMaterial = null;
+let interiorMaterial = null;
+
+/* =============================
+   CUSTOMIZAÇÃO 3D – COR / PELÍCULA / LUZES
+============================= */
+
+// Troca de cor (envelopamento)
+document.getElementById("corCarro").addEventListener("input", (e) => {
+    const cor = e.target.value;
+
+    if (pinturaMaterial)
+        pinturaMaterial.color.set(cor);
+});
+
+// Troca de película
+document.getElementById("pelicula").addEventListener("change", (e) => {
+    const opacidade = Number(e.target.value);
+
+    if (vidroMaterial) {
+        vidroMaterial.opacity = opacidade;
+        vidroMaterial.transparent = opacidade !== 1;
+    }
+});
+
+// Iluminação DRL
+document.getElementById("drl").addEventListener("change", (e) => {
+    if (farolMaterial)
+        farolMaterial.emissiveIntensity = e.target.checked ? 8 : 0.2;
+});
+
+// Farol principal LED
+document.getElementById("farol").addEventListener("change", (e) => {
+    if (farolMaterial)
+        farolMaterial.emissiveIntensity = e.target.checked ? 20 : 0.2;
+});
+
+// Iluminação interna
+document.getElementById("interno").addEventListener("change", (e) => {
+    if (interiorMaterial)
+        interiorMaterial.emissiveIntensity = e.target.checked ? 4 : 0;
+});
+</script>
+
+  <!-- === FUNDO TRON === -->
+  <script>
+    const canvas = document.getElementById('tronBackground');
+    const ctx = canvas.getContext('2d');
+    let w, h, gridSize, speed;
+
+    function resize() {
+      w = canvas.width = window.innerWidth;
+      h = canvas.height = window.innerHeight;
+      gridSize = 40;
+      speed = 0.15;
+    }
+    window.addEventListener('resize', resize);
+    resize();
+
+    let t = 0;
+    function draw() {
+      t += speed;
+      ctx.fillStyle = "rgba(0,0,10,0.25)";
+      ctx.fillRect(0,0,w,h);
+
+      const horizon = h * 0.5;
+      const perspective = 300;
+      const roadWidth = 2000;
+
+      ctx.save();
+      ctx.translate(w/2, horizon);
+
+      for (let z = 0; z < 40; z++) {
+        const depth = z * gridSize + (t * 200) % gridSize;
+        const scale = perspective / (perspective + depth);
+        const y = scale * (roadWidth / 2);
+        const brightness = 0.6 + 0.4 * Math.sin((t + z) * 2);
+        ctx.strokeStyle = `rgba(0,255,255,${brightness})`;
+        ctx.beginPath();
+        ctx.moveTo(-roadWidth * scale, y);
+        ctx.lineTo(roadWidth * scale, y);
+        ctx.stroke();
+      }
+
+      for (let i = -roadWidth; i <= roadWidth; i += gridSize * 2) {
+        ctx.beginPath();
+        for (let z = 0; z < 40; z++) {
+          const depth = z * gridSize + (t * 200) % gridSize;
+          const scale = perspective / (perspective + depth);
+          const y = scale * (roadWidth / 2);
+          const x = i * scale;
+          if (z === 0) ctx.moveTo(x, y);
+          else ctx.lineTo(x, y);
+        }
+        ctx.strokeStyle = "rgba(0,255,255,0.3)";
+        ctx.stroke();
+      }
+
+      ctx.restore();
+      requestAnimationFrame(draw);
+    }
+    draw();
+  </script>
+
+  <!-- === GALERIA FADE === -->
+  <script>
+    const images = document.querySelectorAll('.gallery img');
+    let index = 0;
+    function showNextImage() {
+      images.forEach((img, i) => {
+        img.style.opacity = (i === index) ? 1 : 0;
+        img.style.transform = (i === index) ? "scale(1.05)" : "scale(1)";
+      });
+      index = (index + 1) % images.length;
+    }
+    showNextImage();
+    setInterval(showNextImage, 4000);
+  </script>
+
+  <script>
+document.getElementById("gerar-os").addEventListener("click", () => {
+    const carro = document.getElementById("carro").value;
+    const checkboxes = document.querySelectorAll("#simulador-container input[type=checkbox]");
+
+    if (!carro) {
+        alert("Selecione o modelo do carro.");
+        return;
+    }
+
+    let itens = [];
+    let total = 0;
+
+    checkboxes.forEach(chk => {
+        if (chk.checked) {
+            itens.push({
+                nome: chk.dataset.nome,
+                preco: Number(chk.dataset.preco)
+            });
+            total += Number(chk.dataset.preco);
+        }
+    });
+
+    if (itens.length === 0) {
+        alert("Selecione pelo menos 1 item.");
+        return;
+    }
+
+    let html = `<h3>Orçamento / Ordem de Serviço</h3>`;
+    html += `<p><strong>Carro:</strong> ${carro}</p>`;
+    html += `<ul>`;
+
+    itens.forEach(item => {
+        html += `<li>${item.nome} — R$ ${item.preco.toFixed(2)}</li>`;
+    });
+
+    html += `</ul>`;
+    html += `<h2>Total: R$ ${total.toFixed(2)}</h2>`;
+
+    html += `<br><button onclick="window.print()" style="
+        padding:12px 20px;
+        background:#00ffff;
+        border:none;
+        border-radius:8px;
+        cursor:pointer;
+        font-weight:bold;
+        color:#000;
+    ">Imprimir / Salvar PDF</button>`;
+
+    document.getElementById("resultado").innerHTML = html;
+});
+</script>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/three@0.128/examples/js/loaders/GLTFLoader.js"></script>
+
+
+<script>
+function iniciar3D(modelo = "Hatch.glb") {
+    const container = document.getElementById("view3d");
+    cena3D = new THREE.Scene();
+    camera3D = new THREE.PerspectiveCamera(40, container.clientWidth / 350, 0.1, 1000);
+
+    render3D = new THREE.WebGLRenderer({ alpha: true, antialias: true });
+    render3D.setSize(container.clientWidth, 350);
+    container.innerHTML = "";
+    container.appendChild(render3D.domElement);
+
+    camera3D.position.set(0, 1.4, 4);
+
+    const luz = new THREE.HemisphereLight(0xffffff, 0x222222, 1.3);
+    cena3D.add(luz);
+
+    const loader = new THREE.GLTFLoader();
+    loader.load("3d/" + modelo, (gltf) => {
+        carroModelo = gltf.scene;
+
+        carroModelo.traverse((obj) => {
+            if (obj.isMesh) {
+
+                // Pintura do carro
+                if (obj.name.toLowerCase().includes("carpaint")) {
+                    pinturaMaterial = obj.material;
+                    pinturaMaterial.metalness = 0.3;
+                    pinturaMaterial.roughness = 0.4;
+                }
+
+                // Vidros do carro
+                if (obj.name.toLowerCase().includes("glass")) {
+                    vidroMaterial = obj.material;
+                    vidroMaterial.transparent = true;
+                    vidroMaterial.opacity = 0.8;
+                }
+
+                // Faróis
+                if (obj.name.toLowerCase().includes("headlight")) {
+                    farolMaterial = obj.material;
+                    farolMaterial.emissive = new THREE.Color("#ffffff");
+                    farolMaterial.emissiveIntensity = 0.2;
+                }
+
+                // Luz interna
+                if (obj.name.toLowerCase().includes("interior_light")) {
+                    interiorMaterial = obj.material;
+                    interiorMaterial.emissive = new THREE.Color("#00aaff");
+                    interiorMaterial.emissiveIntensity = 0;
+                }
+            }
+        });
+
+        cena3D.add(carroModelo);
+    });
+
+    function anim() {
+        requestAnimationFrame(anim);
+        if (carroModelo) carroModelo.rotation.y += 0.004;
+        render3D.render(cena3D, camera3D);
+    }
+    anim();
+}
+</script>
+
+<script>
+fetch("api/listar_servicos.php")
+  .then(res => res.json())
+  .then(servicos => {
+    let html = "";
+
+    servicos.forEach(s => {
+      html += `
+      <div>
+        <input type="checkbox" data-nome="${s.nome}" data-preco="${s.preco}">
+        ${s.categoria} - ${s.marca} - ${s.nome}
+        <strong>R$ ${s.preco}</strong>
+      </div>`;
+    });
+
+    document.getElementById("lista-servicos").innerHTML = html;
+  });
+</script>
+
+<script>
+document.getElementById("gerar").onclick = () => {
+    const tipo = document.getElementById("tipoCarro").value;
+    const itens = [];
+    let total = 0;
+
+    document.querySelectorAll("#lista-servicos input").forEach(c => {
+        if (c.checked) {
+            itens.push({
+                nome: c.dataset.nome,
+                preco: Number(c.dataset.preco)
+            });
+            total += Number(c.dataset.preco);
+        }
+    });
+
+    if (itens.length === 0) {
+        alert("Selecione pelo menos 1 item.");
+        return;
+    }
+
+    const cliente = prompt("Nome do cliente:");
+    const whatsapp = prompt("WhatsApp do cliente (apenas números):");
+
+    fetch("api/salvar_os.php", {
+        method: "POST",
+        body: JSON.stringify({
+            cliente_nome: cliente,
+            cliente_whatsapp: whatsapp,
+            carro: tipo,
+            itens,
+            total
+        })
+    })
+    .then(r => r.json())
+    .then(d => {
+        let texto = `*ORÇAMENTO ATILLA*\n\n`;
+        texto += `Cliente: ${cliente}\nCarro: ${tipo}\n\n`;
+        itens.forEach(i => {
+            texto += `• ${i.nome} — R$ ${i.preco}\n`;
+        });
+        texto += `\n*Total: R$ ${total.toFixed(2)}*\n`;
+        texto += `\nOrdem de Serviço Nº: ${d.os_id}`;
+
+        const url = "https://wa.me/55" + whatsapp + "?text=" + encodeURIComponent(texto);
+
+        document.getElementById("resultado").innerHTML = `
+          <h2>Orçamento Gerado!</h2>
+          <p>Envie pelo WhatsApp:</p>
+          <a href="${url}" target="_blank" style="color:#00ffff;">Enviar Mensagem</a>
+        `;
+    });
+};
+</script>
+
+</body>
+</html>
